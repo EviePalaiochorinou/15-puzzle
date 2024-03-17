@@ -10,7 +10,11 @@ public class GameEngineStoreImpl implements GameEngineStore {
 
     @Override
     public Game getGame(String playerId) {
-        return store.get(playerId).copy();
+        Game game = store.get(playerId);
+        if (game == null) {
+            throw new RuntimeException("Game not found");
+        }
+        return game.copy();
     }
 
     @Override

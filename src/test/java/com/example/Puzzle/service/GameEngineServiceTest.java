@@ -53,11 +53,23 @@ class GameEngineServiceTest {
     }
 
     @Test
-    void getPlayerGameReturnsCorrectGame() {
+    void getPlayerGameReturnsCorrectGame() throws GameNotFoundException {
         String playerId = "player1";
         Game game = gameEngineService.startNewGame(playerId);
         Game retrievedGame = gameEngineService.getPlayerGame(playerId);
 
         assertTrue(retrievedGame.equals(game));
+    }
+
+    @Test
+    void getPlayerGameThrowsExceptionIfGameNotFound() {
+        String playerId = "player1";
+        assertThrows(GameNotFoundException.class, () -> gameEngineService.getPlayerGame(playerId));
+    }
+
+    @Test
+    void playNextMoveThrowsExceptionIfGameNotFound() {
+        String playerId = "player1";
+        assertThrows(GameNotFoundException.class, () -> gameEngineService.playNextMove(playerId, "up"));
     }
 }

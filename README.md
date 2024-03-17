@@ -49,7 +49,7 @@ Or by right-clicking on run on the test package in Intellij.
 
 ## 🖊️ Implementation
 
-The API exposes the following two endpoints:
+The API exposes the following endpoints:
 
 ### `POST /player/{playerId}/game`
 
@@ -92,6 +92,7 @@ Example request: `/player/1/play`
 3. The game ends after a single move for a given player because we are not implementing the tile logic.  
    We implemented a fake method that checks if the board is in the winning state.
 4. The game is initialized with a random board.
+5. After applying a move, we generate a new board to show that the game state changed, since we are not implementing the tile logic.
 
 ## Implementation
 
@@ -99,8 +100,7 @@ Example request: `/player/1/play`
 
 - The service throws an error when the player tries to make a new move after their game has ended.
 - A **custom** exception was created for when the client requests an invalid move to be played.
-- Future work: Exception when you are trying to GET the game of a player that does not exist. The persistence layer would throw an exception that when caught by the service layer, then the service throws an exception with a meaningful message.
-
+- A **custom** exception was created for when the client requests a game that does not exist.
 
 ### 💻 Testing
 
@@ -110,7 +110,6 @@ Example request: `/player/1/play`
 
 ### 💻 Assumptions
 
-- Since we do not have logs, in some cases the error caught is printed instead.
 - No overrides.properties needed as we do not have any properties to override for this application.
 - We use a Data Access Object because it allows us to isolate the service layer from the persistence layer  
   (usually a database but can be any other persistence mechanism) using an abstract API.  
@@ -120,4 +119,5 @@ This permits both layers to evolve separately without knowing anything about eac
 ### 💬 Future Work
 
 - If we had different implementations of the Store, I would name then like 'GameEngineStoreMapImpl', 'GameEngineStoreDBImpl', etc.
-- Add a database to store the data for resilience, scalability, and advanced handling, instead of keeping the data in memory.
+- Add a database to store the data for resilience and scalability instead of keeping the data in memory.
+- Proper logging.

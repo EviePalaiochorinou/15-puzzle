@@ -3,6 +3,8 @@ package com.example.Puzzle.controller;
 import com.example.Puzzle.controller.model.GameResponse;
 import com.example.Puzzle.controller.model.PlayerMoveRequest;
 import com.example.Puzzle.service.GameEngineService;
+import com.example.Puzzle.service.GameNotFoundException;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,10 +33,15 @@ public class FifteenPuzzleController {
     }
 
     @GetMapping("/{playerId}/game")
-    public GameResponse refreshPage(@PathVariable String playerId) {
+    public GameResponse refreshPage(@PathVariable String playerId) throws GameNotFoundException {
         return new GameResponse(gameEngineService.getPlayerGame(playerId));
     }
 
+    @ExceptionHandler(GameNotFoundException.class)
+    public ResponseStatusException handleGameNotFoundException(GameNotFoundException e) {
+        return new ResponseStatusException(
+                HttpStatus.NOT_FOUND, e.getMessage(), e);
+    }
     @ExceptionHandler(Exception.class)
     public ResponseStatusException handleException(Exception e) {
         return new ResponseStatusException(

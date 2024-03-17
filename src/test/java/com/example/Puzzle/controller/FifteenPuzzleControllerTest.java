@@ -54,7 +54,7 @@ class FifteenPuzzleControllerTest {
     }
 
     @Test
-    void playNextMoveThrowsException() throws Exception {
+    void playNextMoveAfterGameWonThrowsException() throws Exception {
         String playerId = "1";
         PlayerMoveRequest playerMoveRequest = new PlayerMoveRequest("up");
 //      Necessary hacky steps to cause the exception
@@ -89,13 +89,6 @@ class FifteenPuzzleControllerTest {
     }
 
     @Test
-    void refreshPageThrowsExceptionIfPlayerDoesNotExist() throws Exception {
-        String playerId = "player1";
-        mockMvc.perform(MockMvcRequestBuilders.get("/player/" + playerId + "/game"))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
-
-    @Test
     void playNextMoveThrowsExceptionIfInvalidMove() throws Exception {
         String playerId = "1";
         PlayerMoveRequest playerMoveRequest = new PlayerMoveRequest("invalid");
@@ -105,5 +98,21 @@ class FifteenPuzzleControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(playerMoveRequest)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    void playNextMoveThrowsExceptionIfGameNotFound() throws Exception {
+        String playerId = "player1";
+        mockMvc.perform(MockMvcRequestBuilders.put("/player/" + playerId + "/play")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(new PlayerMoveRequest("up"))))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test
+    void refreshPageThrowsExceptionIfGameNotFound() throws Exception {
+        String playerId = "player1";
+        mockMvc.perform(MockMvcRequestBuilders.get("/player/" + playerId + "/game"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 }

@@ -3,7 +3,9 @@ package com.example.Puzzle.service;
 import com.example.Puzzle.dao.GameEngineStore;
 import com.example.Puzzle.model.Game;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class GameEngineService {
@@ -21,7 +23,13 @@ public class GameEngineService {
     }
 
     public Game playNextMove(String playerId, String move) throws Exception {
-        Game game = gameEngineStore.getGame(playerId);
+        Game game;
+        try {
+            game = gameEngineStore.getGame(playerId);
+        }
+        catch (RuntimeException e) {
+            throw new GameNotFoundException("Game not found");
+        }
         if (game.playerHasPreviouslyWon()) {
             throw new Exception("Player has already won. Start a new game");
         }
@@ -30,7 +38,12 @@ public class GameEngineService {
         return game;
     }
 
-    public Game getPlayerGame(String playerId) {
-        return gameEngineStore.getGame(playerId);
+    public Game getPlayerGame(String playerId) throws GameNotFoundException {
+        try {
+            return gameEngineStore.getGame(playerId);
+        }
+        catch (RuntimeException e) {
+            throw new GameNotFoundException("Game not found");
+        }
     }
 }
